@@ -217,13 +217,18 @@ class HabitTracker {
         if (this.editingHabitId) {
             // Update existing habit
             const habit = this.habits.find(h => h.id === this.editingHabitId);
+            if (!habit) {
+                console.error('Habit not found');
+                this.closeModal();
+                return;
+            }
             habit.name = name;
             habit.category = category;
             habit.goal = goal;
         } else {
             // Create new habit
             const newHabit = {
-                id: Date.now(),
+                id: Date.now() + Math.random(), // Add randomness to prevent collisions
                 name,
                 category,
                 goal,
@@ -424,10 +429,19 @@ class HabitTracker {
 // Initialize the app
 const tracker = new HabitTracker();
 
-// Check for daily reset at midnight
-setInterval(() => {
+// Schedule daily reset at midnight
+function scheduleNextMidnightReset() {
     const now = new Date();
-    if (now.getHours() === 0 && now.getMinutes() === 0) {
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    const timeUntilMidnight = tomorrow - now;
+    
+    setTimeout(() => {
         tracker.resetDailyCompletions();
-    }
-}, 60000); // Check every minute
+        scheduleNextMidnightReset(); // Schedule next reset
+    }, timeUntilMidnight);
+}
+
+// Start the midnight reset scheduler
+scheduleNextMidnightReset();
