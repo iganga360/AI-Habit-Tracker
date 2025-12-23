@@ -15,6 +15,15 @@ class HabitTracker {
         this.setupEventListeners();
     }
 
+    escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     setupEventListeners() {
         // Add habit button
         document.getElementById('addHabitBtn').addEventListener('click', () => {
@@ -119,12 +128,12 @@ class HabitTracker {
                     onchange="tracker.toggleHabit(${habit.id})"
                 >
                 <div class="habit-info">
-                    <div class="habit-name">${habit.name}</div>
+                    <div class="habit-name">${this.escapeHtml(habit.name)}</div>
                     <div class="habit-details">
                         <span class="habit-category category-${habit.category}">
                             ${this.getCategoryIcon(habit.category)} ${habit.category}
                         </span>
-                        <span class="habit-goal">${habit.goal || 'Daily'}</span>
+                        <span class="habit-goal">${this.escapeHtml(habit.goal || 'Daily')}</span>
                         <span class="habit-streak">🔥 ${habit.streak} day streak</span>
                     </div>
                 </div>
@@ -179,6 +188,7 @@ class HabitTracker {
 
         if (habitId) {
             const habit = this.habits.find(h => h.id === habitId);
+            if (!habit) return;
             title.textContent = 'Edit Habit';
             document.getElementById('habitName').value = habit.name;
             document.getElementById('habitCategory').value = habit.category;
@@ -234,10 +244,14 @@ class HabitTracker {
     }
 
     editHabit(id) {
+        const habit = this.habits.find(h => h.id === id);
+        if (!habit) return;
         this.openModal(id);
     }
 
     deleteHabit(id) {
+        const habit = this.habits.find(h => h.id === id);
+        if (!habit) return;
         if (confirm('Are you sure you want to delete this habit?')) {
             this.habits = this.habits.filter(h => h.id !== id);
             this.saveHabits();
@@ -260,12 +274,20 @@ class HabitTracker {
             { name: 'Evening Walk', count: '950 users', category: 'health' }
         ];
 
-        trendingList.innerHTML = trendingHabits.map(habit => `
-            <div class="trending-item" onclick="tracker.addTrendingHabit('${habit.name}', '${habit.category}')">
-                <span class="trending-name">${this.getCategoryIcon(habit.category)} ${habit.name}</span>
+        trendingList.innerHTML = trendingHabits.map((habit, index) => `
+            <div class="trending-item" data-habit-index="${index}">
+                <span class="trending-name">${this.getCategoryIcon(habit.category)} ${this.escapeHtml(habit.name)}</span>
                 <span class="trending-count">${habit.count}</span>
             </div>
         `).join('');
+
+        // Add click event listeners after rendering
+        trendingList.querySelectorAll('.trending-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                const habit = trendingHabits[index];
+                this.addTrendingHabit(habit.name, habit.category);
+            });
+        });
     }
 
     addTrendingHabit(name, category) {
@@ -348,7 +370,7 @@ class HabitTracker {
         const bestStreak = Math.max(...this.habits.map(h => h.streak), 0);
         if (bestStreak >= 7) {
             const bestHabit = this.habits.find(h => h.streak === bestStreak);
-            insights.push(`⭐ Your best streak is ${bestStreak} days with "${bestHabit.name}". Fantastic commitment!`);
+            insights.push(`⭐ Your best streak is ${bestStreak} days with "${this.escapeHtml(bestHabit.name)}". Fantastic commitment!`);
         }
 
         return insights;
@@ -402,7 +424,7 @@ class HabitTracker {
 // Initialize the app
 const tracker = new HabitTracker();
 
-// Check for daily reset every hour
+// Check for daily reset at midnight
 setInterval(() => {
     const now = new Date();
     if (now.getHours() === 0 && now.getMinutes() === 0) {
