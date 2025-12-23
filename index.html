@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Habit Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 AI Habit Tracker</h1>
+            <p class="subtitle">Build better habits with AI-powered insights</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Daily Habits Section -->
+            <section class="daily-habits">
+                <div class="section-header">
+                    <h2>📅 Today's Habits</h2>
+                    <span class="date" id="currentDate"></span>
+                </div>
+                <div id="habitsList" class="habits-list"></div>
+                <button class="btn btn-primary" id="addHabitBtn">+ Add New Habit</button>
+            </section>
+
+            <!-- Trending Features Section -->
+            <aside class="trending-section">
+                <h2>🔥 Trending Habits</h2>
+                <div id="trendingHabits" class="trending-list"></div>
+                
+                <h2>🤖 AI Insights</h2>
+                <div id="aiInsights" class="ai-insights"></div>
+                
+                <h2>📊 Your Stats</h2>
+                <div id="statsSection" class="stats-section"></div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Add/Edit Habit Modal -->
+    <div id="habitModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Add New Habit</h2>
+            <form id="habitForm">
+                <div class="form-group">
+                    <label for="habitName">Habit Name:</label>
+                    <input type="text" id="habitName" required placeholder="e.g., Morning Exercise">
+                </div>
+                <div class="form-group">
+                    <label for="habitCategory">Category:</label>
+                    <select id="habitCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="health">Health & Fitness</option>
+                        <option value="productivity">Productivity</option>
+                        <option value="mindfulness">Mindfulness</option>
+                        <option value="learning">Learning</option>
+                        <option value="social">Social</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="habitGoal">Daily Goal:</label>
+                    <input type="text" id="habitGoal" placeholder="e.g., 30 minutes">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Habit</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
